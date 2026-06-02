@@ -219,7 +219,13 @@ footer p { font-size: 12px; color: #8fa8c8; }
   <p>© 2026 Security Hub. All rights reserved.</p>
 </footer>
 
+<script src="https://cdn.amplitude.com/libs/analytics-browser-2.3.5-min.js.gz"></script>
 <script>
+window.addEventListener('load', function() {
+  amplitude.init('4ab5d17e8d13bd706f99b634c8ae86e3', { autocapture: true });
+  amplitude.track('page_viewed', { page: 'landing' });
+});
+
 const SUPABASE_URL = 'https://alevpgjdedwcsnmbtvmy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dkuwURAjFO3Y6rIeQzl4mA_QzydhLkP';
 
@@ -247,6 +253,7 @@ async function submitEmail() {
     });
 
     if (res.ok) {
+      amplitude.track('waiting_list_signup', { email });
       toast.textContent = '✓ 등록되었습니다. 출시 시 가장 먼저 알려드릴게요!';
       toast.className = 'toast';
       toast.style.display = 'block';
