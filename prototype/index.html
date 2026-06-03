@@ -392,7 +392,12 @@
 <body>
 
 <div class="topbar">
-  <div class="logo"><span>Security</span> Hub <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">Prototype v0.1</span></div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <a href="../index.html" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:4px;border:1px solid var(--border);padding:4px 10px;border-radius:6px;transition:color 0.15s" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color='var(--text3)'">
+      <i class="ti ti-arrow-left" style="font-size:12px"></i> 기획서
+    </a>
+    <div class="logo"><span>Security</span> Hub <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">Prototype v0.1</span></div>
+  </div>
   <nav class="nav">
     <button class="nav-btn active" onclick="show('onboarding')"><i class="ti ti-rocket" style="font-size:13px;vertical-align:-1px"></i> 온보딩</button>
     <button class="nav-btn" onclick="show('dashboard')"><i class="ti ti-layout-dashboard" style="font-size:13px;vertical-align:-1px"></i> 대시보드</button>
