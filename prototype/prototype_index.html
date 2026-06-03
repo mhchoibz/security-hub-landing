@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Hub — 프로토타입</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --purple-dim: #7B74CC;
+    --teal: #1D9E75;
+    --teal-light: #E1F5EE;
+    --danger: #C0392B;
+    --danger-light: #FDECEA;
+    --warning: #D97706;
+    --warning-light: #FEF3C7;
+    --success: #16A34A;
+    --success-light: #DCFCE7;
+    --bg: #F5F4F0;
+    --bg2: #ECEAE4;
+    --surface: #FFFFFF;
+    --border: #D8D6CE;
+    --text: #1C1C1A;
+    --text2: #5F5E5A;
+    --text3: #9B9A96;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── 상단 바 ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-size: 15px; font-weight: 600; }
+  .logo span { color: var(--purple); }
+  .nav { display: flex; gap: 2px; }
+  .nav-btn {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text2);
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-btn:hover { background: var(--bg); color: var(--text); }
+  .nav-btn.active { background: var(--purple-light); color: var(--purple); font-weight: 500; }
+
+  /* ── 공통 ── */
+  .screen { display: none; padding: 20px; max-width: 860px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: none; }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-ok { background: var(--success-light); color: var(--success); }
+  .badge-warn { background: var(--warning-light); color: var(--warning); }
+  .badge-off { background: var(--bg2); color: var(--text3); }
+  .badge-danger { background: var(--danger-light); color: var(--danger); }
+
+  .pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--danger-light);
+    color: var(--danger);
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 20px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-ghost:hover { background: var(--bg); }
+
+  .btn-danger {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid #F5C6C2;
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .btn-danger:hover { opacity: 0.8; }
+
+  /* ── 온보딩 ── */
+  .step-bar {
+    display: flex;
+    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .step-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    font-size: 12px;
+    color: var(--text3);
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .step-item:last-child { border-right: none; }
+  .step-item.done { color: var(--success); background: var(--success-light); }
+  .step-item.current { color: var(--purple); background: var(--purple-light); font-weight: 600; }
+  .step-num {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    opacity: 0.7;
+  }
+
+  .check-list { display: flex; flex-direction: column; gap: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .check-item.selected { border-color: var(--purple); background: var(--purple-light); }
+  .check-item .ci-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .check-item .ci-desc { font-size: 11px; color: var(--text2); }
+  .check-icon { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .check-item.selected .check-icon { background: var(--purple); border-color: var(--purple); color: #fff; }
+
+  .form-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: block; font-weight: 500; }
+  .form-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--purple); }
+
+  .hint { font-size: 12px; color: var(--text3); margin-top: 6px; }
+
+  .dns-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+  }
+  .dns-label { font-size: 10px; color: var(--text3); font-family: inherit; margin-bottom: 4px; font-weight: 600; letter-spacing: 0.05em; }
+
+  .complete-box {
+    text-align: center;
+    padding: 24px 0;
+  }
+  .complete-icon { font-size: 48px; color: var(--success); margin-bottom: 12px; }
+  .complete-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .complete-desc { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+
+  /* ── 대시보드 ── */
+  .dash-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .dash-domain { font-size: 16px; font-weight: 600; }
+  .dash-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }
+  .metric-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
+  .metric-val { font-size: 24px; font-weight: 600; }
+  .metric-val.danger { color: var(--danger); }
+  .metric-val.warning { color: var(--warning); }
+  .metric-val.success { color: var(--success); }
+  .metric-val.purple { color: var(--purple); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+  .event-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 6px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+  .event-row:last-child { border-bottom: none; }
+  .event-row:hover { background: var(--bg); }
+  .event-time { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .event-product { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+  /* ── 이벤트 ── */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .detail-item { }
+  .detail-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; font-weight: 500; }
+  .detail-val { font-size: 13px; font-weight: 600; }
+  .detail-val.danger { color: var(--danger); }
+
+  .apply-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .apply-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .apply-item.selected { border-color: var(--purple); background: var(--purple-light); color: var(--purple); }
+
+  .action-row { display: flex; align-items: center; gap: 10px; }
+  .form-select {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+  }
+
+  .result-box {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: var(--success-light);
+    color: var(--success);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── 알림 ── */
+  .alert-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .alert-row:last-child { border-bottom: none; }
+  .alert-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .dot-danger { background: var(--danger); }
+  .dot-warn { background: var(--warning); }
+  .dot-info { background: var(--purple); }
+
+  .alert-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .alert-desc { font-size: 12px; color: var(--text2); }
+  .alert-time { font-size: 11px; color: var(--text3); white-space: nowrap; margin-left: auto; }
+
+  .channel-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .channel-row:last-child { border-bottom: none; }
+
+  /* ── 푸터 ── */
+  .proto-footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    padding: 24px 0 32px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span>Security</span> Hub <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">Prototype v0.1</span></div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="show('onboarding')"><i class="ti ti-rocket" style="font-size:13px;vertical-align:-1px"></i> 온보딩</button>
+    <button class="nav-btn" onclick="show('dashboard')"><i class="ti ti-layout-dashboard" style="font-size:13px;vertical-align:-1px"></i> 대시보드</button>
+    <button class="nav-btn" onclick="show('events')"><i class="ti ti-alert-triangle" style="font-size:13px;vertical-align:-1px"></i> 이벤트</button>
+    <button class="nav-btn" onclick="show('alerts')"><i class="ti ti-bell" style="font-size:13px;vertical-align:-1px"></i> 알림</button>
+  </nav>
+</div>
+
+<!-- ── 온보딩 ── -->
+<div id="onboarding" class="screen active">
+  <div class="step-bar">
+    <div class="step-item done" id="s1"><span class="step-num">STEP 1</span>도메인</div>
+    <div class="step-item current" id="s2"><span class="step-num">STEP 2</span>제품 선택</div>
+    <div class="step-item" id="s3"><span class="step-num">STEP 3</span>설정 안내</div>
+    <div class="step-item" id="s4"><span class="step-num">STEP 4</span>완료</div>
+  </div>
+
+  <div class="card" id="step-body">
+    <!-- Step 2 기본 -->
+    <div class="section-label">도입할 보안 제품을 선택하세요</div>
+    <div class="check-list">
+      <div class="check-item selected" id="c1" onclick="toggleCheck('c1')">
+        <div class="check-icon"><i class="ti ti-check" style="font-size:12px"></i></div>
+        <div style="flex:1">
+          <div class="ci-title">Cloudbric WAF+</div>
+          <div class="ci-desc">웹 애플리케이션 방화벽 · API 보안 · Bot 완화 · DDoS 방어</div>
+        </div>
+      </div>
+      <div class="check-item" id="c2" onclick="toggleCheck('c2')">
+        <div class="check-icon"></div>
+        <div style="flex:1">
+          <div class="ci-title">Managed Rules (AWS WAF)</div>
+          <div class="ci-desc">AWS WAF용 관리형 규칙 그룹 · 자동 업데이트</div>
+        </div>
+      </div>
+      <div class="check-item" id="c3" onclick="toggleCheck('c3')">
+        <div class="check-icon"></div>
+        <div style="flex:1">
+          <div class="ci-title">Cloudbric Mask</div>
+          <div class="ci-desc">AI 기반 영상·이미지 비식별화</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;margin-top:4px">
+    <button class="btn-ghost" onclick="prevStep()">← 이전</button>
+    <button class="btn-primary" onclick="nextStep()">다음 단계 →</button>
+  </div>
+</div>
+
+<!-- ── 대시보드 ── -->
+<div id="dashboard" class="screen">
+  <div class="dash-header">
+    <div>
+      <div class="dash-domain">example.com</div>
+      <div class="dash-sub">최근 24시간 기준 · 마지막 업데이트 방금 전</div>
+    </div>
+    <span class="badge badge-warn"><i class="ti ti-alert-triangle" style="font-size:12px;vertical-align:-1px"></i> Warning</span>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">총 차단</div><div class="metric-val danger">1,284</div></div>
+    <div class="metric"><div class="metric-label">탐지</div><div class="metric-val warning">1,301</div></div>
+    <div class="metric"><div class="metric-label">허용 요청</div><div class="metric-val">48,203</div></div>
+    <div class="metric"><div class="metric-label">활성 제품</div><div class="metric-val purple">2</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="section-label">제품별 상태</div>
+      <div class="row">
+        <span style="flex:1;font-weight:500">WAF+</span>
+        <span style="font-size:12px;color:var(--text3)">980건</span>
+        <span class="badge badge-ok">정상</span>
+      </div>
+      <div class="row">
+        <span style="flex:1;font-weight:500">Managed Rules</span>
+        <span style="font-size:12px;color:var(--text3)">304건</span>
+        <span class="badge badge-ok">정상</span>
+      </div>
+      <div class="row">
+        <span style="flex:1;font-weight:500">Mask</span>
+        <span style="font-size:12px;color:var(--text3)">—</span>
+        <span class="badge badge-off">미연동</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">위협 유형 Top 3</div>
+      <div class="row">
+        <span class="pill">SQLi</span>
+        <span style="flex:1;padding-left:4px">SQL Injection</span>
+        <span style="font-weight:600;color:var(--danger)">512</span>
+      </div>
+      <div class="row">
+        <span class="pill" style="background:var(--warning-light);color:var(--warning)">XSS</span>
+        <span style="flex:1;padding-left:4px">Cross-Site Scripting</span>
+        <span style="font-weight:600;color:var(--warning)">298</span>
+      </div>
+      <div class="row">
+        <span class="pill" style="background:var(--bg2);color:var(--text2)">Bot</span>
+        <span style="flex:1;padding-left:4px">Bad Bot</span>
+        <span style="font-weight:600;color:var(--text2)">210</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">최근 이벤트</div>
+    <div class="event-row" onclick="show('events')">
+      <span class="pill">SQLi</span>
+      <span style="flex:1">203.0.113.42 → /api/login</span>
+      <span class="event-product">WAF+</span>
+      <span class="event-time">09:12</span>
+    </div>
+    <div class="event-row" onclick="show('events')">
+      <span class="pill" style="background:var(--warning-light);color:var(--warning)">XSS</span>
+      <span style="flex:1">198.51.100.8 → /search</span>
+      <span class="event-product">WAF+</span>
+      <span class="event-time">08:47</span>
+    </div>
+    <div class="event-row" onclick="show('events')">
+      <span class="pill" style="background:var(--bg2);color:var(--text2)">Bot</span>
+      <span style="flex:1">192.0.2.55 → /products</span>
+      <span class="event-product">Rules</span>
+      <span class="event-time">08:31</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 이벤트 ── -->
+<div id="events" class="screen">
+  <div style="font-size:16px;font-weight:600;margin-bottom:14px">이벤트 상세</div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <span class="pill" style="font-size:12px;padding:4px 12px">SQLi</span>
+      <span style="font-size:14px;font-weight:600">SQL Injection 탐지</span>
+      <span class="badge badge-ok" style="margin-left:auto">차단됨</span>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">출발 IP</div><div class="detail-val">203.0.113.42</div></div>
+      <div class="detail-item"><div class="detail-label">탐지 제품</div><div class="detail-val">Cloudbric WAF+</div></div>
+      <div class="detail-item"><div class="detail-label">대상 경로</div><div class="detail-val">/api/login</div></div>
+      <div class="detail-item"><div class="detail-label">발생 시각</div><div class="detail-val">09:12:04</div></div>
+      <div class="detail-item"><div class="detail-label">출발 국가</div><div class="detail-val">CN</div></div>
+      <div class="detail-item"><div class="detail-label">동일 IP 발생</div><div class="detail-val danger">오늘 14회</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">즉시 대응</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px">적용할 제품을 선택하고 차단하세요</div>
+    <div class="apply-row">
+      <div class="apply-item selected" id="ap1" onclick="toggleApply('ap1')">
+        WAF+
+        <i class="ti ti-check" style="font-size:14px"></i>
+      </div>
+      <div class="apply-item selected" id="ap2" onclick="toggleApply('ap2')">
+        Managed Rules
+        <i class="ti ti-check" style="font-size:14px"></i>
+      </div>
+    </div>
+    <div class="action-row">
+      <select class="form-select">
+        <option>24시간 차단</option>
+        <option>7일 차단</option>
+        <option>영구 차단</option>
+      </select>
+      <button class="btn-danger" onclick="blockIP()">즉시 차단</button>
+    </div>
+    <div class="result-box" id="block-result">
+      <i class="ti ti-circle-check" style="font-size:15px;vertical-align:-2px"></i>
+      203.0.113.42 차단 완료 — WAF+, Managed Rules 동시 적용됨
+    </div>
+  </div>
+</div>
+
+<!-- ── 알림 ── -->
+<div id="alerts" class="screen">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div style="font-size:16px;font-weight:600">알림 센터</div>
+    <button class="btn-ghost" style="font-size:12px;padding:6px 14px">채널 설정</button>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="section-label">최근 알림</div>
+    <div class="alert-row">
+      <div class="alert-dot dot-danger"></div>
+      <div style="flex:1">
+        <div class="alert-title">동일 IP 반복 공격 감지</div>
+        <div class="alert-desc">203.0.113.42 — 1시간 내 14회 SQLi 시도</div>
+      </div>
+      <div class="alert-time">09:15</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-dot dot-warn"></div>
+      <div style="flex:1">
+        <div class="alert-title">차단 건수 임계값 초과</div>
+        <div class="alert-desc">WAF+ 차단 1,000건 돌파 (기준: 1,000건/일)</div>
+      </div>
+      <div class="alert-time">08:50</div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-dot dot-info"></div>
+      <div style="flex:1">
+        <div class="alert-title">신규 CVE 룰셋 업데이트</div>
+        <div class="alert-desc">Managed Rules — CVE-2025-1234 대응 룰 배포 완료</div>
+      </div>
+      <div class="alert-time">07:00</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">알림 채널</div>
+    <div class="channel-row">
+      <i class="ti ti-mail" style="font-size:17px;color:var(--text3)"></i>
+      <span style="flex:1;font-weight:500">이메일</span>
+      <span class="badge badge-ok">연결됨</span>
+    </div>
+    <div class="channel-row">
+      <i class="ti ti-brand-slack" style="font-size:17px;color:var(--text3)"></i>
+      <span style="flex:1;font-weight:500">Slack</span>
+      <span class="badge badge-off">미연결</span>
+      <button class="btn-primary" style="font-size:11px;padding:4px 12px;margin-left:8px">연결하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="proto-footer">Security Hub Prototype v0.1 · 기획 포트폴리오용</div>
+
+<script>
+var currentStep = 2;
+var checks = { c1: true, c2: false, c3: false };
+var applies = { ap1: true, ap2: true };
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  var map = { onboarding: 0, dashboard: 1, events: 2, alerts: 3 };
+  document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+}
+
+function toggleCheck(id) {
+  checks[id] = !checks[id];
+  var el = document.getElementById(id);
+  var icon = el.querySelector('.check-icon');
+  if (checks[id]) {
+    el.classList.add('selected');
+    icon.innerHTML = '<i class="ti ti-check" style="font-size:12px"></i>';
+  } else {
+    el.classList.remove('selected');
+    icon.innerHTML = '';
+  }
+}
+
+function toggleApply(id) {
+  applies[id] = !applies[id];
+  var el = document.getElementById(id);
+  el.classList.toggle('selected', applies[id]);
+}
+
+function nextStep() {
+  if (currentStep < 4) { currentStep++; renderStep(); }
+}
+function prevStep() {
+  if (currentStep > 1) { currentStep--; renderStep(); }
+}
+
+function renderStep() {
+  ['s1','s2','s3','s4'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    el.className = 'step-item';
+    if (i + 1 < currentStep) el.classList.add('done');
+    else if (i + 1 === currentStep) el.classList.add('current');
+  });
+
+  var body = document.getElementById('step-body');
+  var contents = [
+    `<div class="section-label">보호할 도메인을 입력하세요</div>
+     <label class="form-label">도메인 URL</label>
+     <input class="form-input" value="example.com" placeholder="example.com" />
+     <p class="hint"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-1px"></i> DNS 변경만으로 즉시 적용됩니다 · 예상 소요 약 10분</p>`,
+
+    `<div class="section-label">도입할 보안 제품을 선택하세요</div>
+     <div class="check-list">
+       <div class="check-item ${checks.c1?'selected':''}" id="c1" onclick="toggleCheck('c1')">
+         <div class="check-icon">${checks.c1?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
+         <div style="flex:1"><div class="ci-title">Cloudbric WAF+</div><div class="ci-desc">웹 방화벽 · API 보안 · Bot 완화 · DDoS 방어</div></div>
+       </div>
+       <div class="check-item ${checks.c2?'selected':''}" id="c2" onclick="toggleCheck('c2')">
+         <div class="check-icon">${checks.c2?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
+         <div style="flex:1"><div class="ci-title">Managed Rules (AWS WAF)</div><div class="ci-desc">AWS WAF용 관리형 규칙 그룹 · 자동 업데이트</div></div>
+       </div>
+       <div class="check-item ${checks.c3?'selected':''}" id="c3" onclick="toggleCheck('c3')">
+         <div class="check-icon">${checks.c3?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
+         <div style="flex:1"><div class="ci-title">Cloudbric Mask</div><div class="ci-desc">AI 기반 영상·이미지 비식별화</div></div>
+       </div>
+     </div>`,
+
+    `<div class="section-label">WAF+ 설정 안내</div>
+     <div class="dns-box">
+       <div class="dns-label">CNAME 레코드 변경</div>
+       example.com → waf.cloudbric.com
+     </div>
+     <p class="hint"><i class="ti ti-clock" style="font-size:13px;vertical-align:-1px"></i> DNS 반영까지 약 10분 소요됩니다</p>
+     <div style="margin-top:14px;padding:10px 14px;background:var(--success-light);border-radius:6px;font-size:12px;color:var(--success);font-weight:500">
+       <i class="ti ti-circle-check" style="font-size:14px;vertical-align:-2px"></i> WAF+ 설정 확인됨
+     </div>`,
+
+    `<div class="complete-box">
+       <div class="complete-icon"><i class="ti ti-circle-check"></i></div>
+       <div class="complete-title">온보딩 완료!</div>
+       <div class="complete-desc">WAF+가 활성화되었습니다.<br>대시보드에서 실시간 보안 현황을 확인하세요.</div>
+       <button class="btn-primary" onclick="show('dashboard')">대시보드 바로가기 →</button>
+     </div>`
+  ];
+  body.innerHTML = contents[currentStep - 1];
+}
+
+function blockIP() {
+  document.getElementById('block-result').style.display = 'block';
+}
+</script>
+</body>
+</html>
