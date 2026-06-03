@@ -1,0 +1,182 @@
+Cloudbric Security Hub
+서비스 기획서 v0.1
+멀티 클라우드 보안 통합 관제 플랫폼 기획
+2025년 6월 | 펜타시큐리티 기획직 지원 포트폴리오
+
+목차
+# 섹션 p.
+1 문제 정의 3
+2 시장 / 경쟁사 분석 5
+3 서비스 기획서 7
+4 데이터 흐름 설계 11
+5 API 인터페이스 정의 13
+6 IA (화면 구조도) 15
+Cloudbric Security Hub — 서비스 기획서 v0.1 2
+
+SECTION 01
+문제 정의
+1.1 현재 고객 여정 분석
+Cloudbric 제품을 도입하는 중소기업 IT 담당자는 아래와 같은 단절된 여정을 경험한다.
+단계 현재 경험 문제점
+인지 WAF+, Managed Rules 개별 페이지 탐색 통합 정보 없음
+도입 제품별 개별 가입·DNS 설정·AWS 연동 별도 진행 설정 실패 시 원인 파악 어려움
+운영 WAF+ 콘솔 + AWS Console 각각 로그인 단일 현황 뷰 없음
+대응 제품별 로그 교차 확인 후 각각 차단 조치 대응 지연 발생
+리포트 제품별 데이터 수동 취합 자동화 없음
+1.2 핵심 Pain Point
+Pain Point 1 — 분산된 온보딩
+WAF+와 Managed Rules는 가입 경로·설정 방식·관리 콘솔이 모두 다르다. 보안 전담 인력이 없는 SMB 담당자는 제품별
+매뉴얼을 따로 읽고 따로 설정해야 하며, 초기 설정 실패 시 어느 제품 문제인지 판단조차 어렵다.
+Pain Point 2 — 파편화된 현황 파악
+공격이 발생했을 때 WAF+ 콘솔과 AWS Console을 오가며 로그를 교차 확인해야 한다. "지금 우리 서비스가 안전한가"라는
+질문에 즉시 답할 수 있는 단일 뷰가 없다.
+Pain Point 3 — 대응 지연
+공격 탐지 → 원인 파악 → 차단 조치까지의 과정이 제품별로 분리되어 있어 대응 시간이 늘어난다. WAF+와 Managed
+Rules가 동시에 반응하는 복합 공격 상황에서는 우선순위 판단이 어렵다.
+1.3 페르소나
+항목 내용
+이름 이준혁 (가명)
+직책 IT 팀장 (겸 보안 담당)
+회사 직원 50인 규모 SaaS 스타트업
+기술 수준 개발 경험 있음, 보안 전문가 아님
+보안 예산 월 $200 ~ $500
+현재 사용 Cloudbric WAF+ 사용 중, Managed Rules 검토 중
+핵심 목표 서비스 안정성 유지 · 보안 이슈 빠른 감지
+핵심 불만 "툴이 늘어날수록 관리 포인트도 늘어난다. 하나만 보면 됐으면."
+Cloudbric Security Hub — 서비스 기획서 v0.1 3
+
+SECTION 02
+시장 / 경쟁사 분석
+2.1 시장 배경
+멀티 클라우드 전환이 가속화되면서 기업들이 사용하는 보안 도구 수가 증가하고 있다. 그에 따라 관리 복잡도가 높아지는
+구조적 문제가 공통적으로 나타나고 있으며, 주요 플레이어들은 "통합 관제" 방향으로 진화하고 있다.
+2.2 경쟁사 벤치마킹
+항목 Cloudflare One AWS Security Hub Cloudbric (현재)
+포지션 통합 Zero Trust 플랫폼 AWS 생태계 통합 관제 웹 보안 특화 SaaS
+통합 관제 단일 대시보드 AWS 서비스 통합 제품별 콘솔 분리
+온보딩 DNS + 가이드 위자드 AWS Console 클릭 제품별 개별 진행
+알림 연동 Slack / Email / PagerDuty SNS / Slack 이메일
+주요 고객 중대형 기업 AWS 사용 기업 글로벌 SMB ~ 중견
+약점 비용 높음, SMB엔 과함 AWS 외 환경 미지원 제품 간 통합 없음
+2.3 차별화 포인트
+Cloudflare One은 강력하지만 SMB에 무겁고, AWS Security Hub는 AWS 종속이다. 그 사이 "가볍게 시작할 수
+있으면서 통합 관제가 되는 웹 보안 허브" 자리가 비어 있다. Cloudbric은 이미 그 고객군(1,100개+)을 확보하고 있다.
+차별점 설명
+웹 보안 특화 통합 WAF+·Managed Rules·Mask 등 Cloudbric 제품군에 최적화된 통합 경험
+SMB 친화적 진입 DNS 변경만으로 시작, 제품이 늘어도 관리 창구 하나
+클라우드 비종속 AWS·GCP·Azure·온프레미스 무관하게 동일 허브에서 관제 가능
+Cloudbric Security Hub — 서비스 기획서 v0.1 4
+
+SECTION 03
+서비스 기획서
+3.1 Executive Summary
+Cloudbric Security Hub — 흩어진 Cloudbric 보안 제품을 하나의 플랫폼에서 도입 · 운영 · 대응까지 처리하는 통합 보안
+관제 허브
+3.2 서비스 개요
+항목 내용
+서비스명 Cloudbric Security Hub
+포지션 Cloudbric 제품군 통합 관제 플랫폼
+타겟 보안 전담 인력 없는 SMB IT 담당자
+핵심 가치 도입 단순화 · 현황 통합 · 대응 일원화
+출시 형태 기존 Cloudbric 계정 내 허브 탭 추가 (신규 가입 불필요)
+3.3 핵심 가치 3가지
+One Onboarding
+여러 제품을 도입할 때 하나의 플로우로 끝낸다. 제품별 매뉴얼을 따로 읽고 따로 설정하던 과정을 단일 온보딩 위자드로
+통합한다.
+One View
+WAF+, Managed Rules, Mask의 보안 현황을 하나의 대시보드에서 실시간 확인한다. "지금 안전한가"라는 질문에 즉시
+답할 수 있다.
+One Response
+공격 감지부터 차단 조치까지 허브 안에서 완결된다. 제품을 오가며 로그를 교차 확인하던 과정을 없앤다.
+3.4 핵심 기능 정의
+우선순위 기능명 한 줄 설명
+P0 Unified Onboarding Wizard 도입할 제품 선택 → 단계별 설정 안내 → 완료까지 단일 플로우
+P0 Unified Security Dashboard 전체 제품 보안 현황 실시간 단일 뷰
+P1 Unified Alert & Response 단일 채널 알림 수신 + 허브 내 즉시 차단
+P1 Auto Security Report 주간/월간 보안 리포트 자동 생성 및 이메일 발송
+P2 Multi-domain Management 복수 도메인 통합 관리 (엔터프라이즈 확장)
+P2 Team Permission 팀원 역할 기반 접근 제어
+3.5 온보딩 플로우 상세
+Step 화면명 주요 액션 UX 원칙
+Cloudbric Security Hub — 서비스 기획서 v0.1 5
+
+1 도메인 입력 보호할 도메인 URL 입력 한 번에 하나의 액션만
+2 제품 선택 WAF+ / Managed Rules / Mask 체크박스 선택제품 설명 + 예상 효과 함께 표시
+3 설정 안내 DNS 변경 · AWS 연동 순서대로 안내 예상 소요 시간 표시
+4 완료 설정 완료 확인 + 대시보드 이동 이탈 시 진행상태 저장
+3.6 KPI
+구분 지표 정의 목표
+도입 온보딩 완료율 허브 진입 후 첫 제품 설정 완료 비율 70% 이상
+도입 멀티 제품 전환율 단일 제품 고객이 2개 이상으로 전환 기존 대비 +20%
+운영 DAU/MAU 대시보드 일간/월간 활성 사용자 비율 40% 이상
+운영 평균 대응 시간 공격 감지 → 차단 완료까지 시간 기존 대비 -30%
+비즈니스 리텐션율 허브 도입 고객 12개월 유지율 85% 이상
+비즈니스 ARPU 증가 허브 도입 고객 평균 결제액 기존 대비 +25%
+Cloudbric Security Hub — 서비스 기획서 v0.1 6
+
+SECTION 04
+데이터 흐름 설계
+4.1 온보딩 데이터 흐름
+단계 액터 데이터 비고
+도메인 + 제품 선택 사용자 → Hub domain, products[]
+온보딩 세션 생성 Hub → Session DB session_id, steps[], status
+WAF+ 설정 요청 Hub → WAF+ API domain, config 비동기
+Rules 활성화 요청 Hub → AWS WAF API rule_group_id, scope 비동기
+완료 응답 API → Session DB step status = done
+완료 알림 Hub → 알림 서비스 email / Slack webhook
+4.2 대시보드 데이터 흐름
+단계 액터 데이터 비고
+이벤트 수집 WAF+ / Rules / Mask → Aggregator보안 이벤트 원시 데이터 실시간
+정규화 · 중복 제거 Aggregator → Event DB 정규화된 이벤트 레코드
+위협 레벨 산정 Event DB 내부 처리 threat_level, summary 1분 주기
+현황 조회 Dashboard API → 클라이언트 JSON 응답 Polling/SSE
+임계값 초과 알림 Event DB → 알림 서비스 알림 트리거
+리포트 생성 Event DB → 리포트 생성기 주간/월간 집계 데이터 스케줄
+Cloudbric Security Hub — 서비스 기획서 v0.1 7
+
+SECTION 05
+API 인터페이스 정의
+개발 명세가 아닌 프론트-백 간 데이터 계약 수준의 인터페이스 정의입니다.
+API 1 — 온보딩 세션 생성
+POST /api/v1/onboarding/sessions
+Request { "domain": "example.com", "products": ["waf-plus", "managed-rules"] }
+Response { "session_id": "sess_abc123", "status": "in_progress", "steps": [...], "estimated_minutes": 15 }
+API 2 — 온보딩 진행 상태 조회
+GET /api/v1/onboarding/sessions/{session_id}
+Request (없음)
+Response { "session_id", "domain", "status", "progress": 50, "steps": [...] }
+API 3 — 통합 보안 현황 조회
+GET /api/v1/hub/dashboard?domain=example.com.=24h
+Request (없음)
+Response { "threat_level", "summary": {total_blocked, total_detected}, "by_product": {...}, "top_threats":
+[...], "recent_events": [...] }
+API 4 — 즉시 대응 (IP 차단)
+POST /api/v1/hub/actions/block-ip
+Request { "ip": "203.0.113.42", "domain": "example.com", "products": ["waf-plus", "managed-rules"],
+"duration_hours": 24 }
+Response { "action_id", "status": "success", "applied_to": ["waf-plus", "managed-rules"], "expires_at":
+"..." }
+Cloudbric Security Hub — 서비스 기획서 v0.1 8
+
+SECTION 06
+IA (화면 구조도)
+Security Hub의 전체 화면 구조는 다음과 같이 구성된다.
+L1 (메인) L2 (서브) L3 (상세) 비고
+Security Hub 홈 제품 현황 요약
+온보딩 위자드 Step 1. 도메인 입력
+Step 2. 제품 선택
+Step 3. 설정 안내 DNS 변경 안내 / AWS 연동
+Step 4. 완료 대시보드 이동 버튼 이탈 시 진행상태 저장
+통합 대시보드 제품별 현황 카드 WAF+ / Rules / Mask
+실시간 공격 현황 위협 유형 분포
+최근 이벤트 목록 이벤트 상세 → 즉시 차단
+이벤트 로그 이벤트 목록 이벤트 상세
+즉시 차단 액션 IP 차단 / 정책 적용
+알림 센터 알림 목록
+알림 설정 채널 설정 (이메일/Slack) 임계값 설정
+설정 제품 연동 관리 연동 상태 / 추가
+알림 채널 설정
+계정 관리
+프로토타입 (클릭 가능) : 온보딩 위자드 4스텝 · 통합 대시보드 · 이벤트 상세 + 즉시 차단 · 알림 센터
+Cloudbric Security Hub — 서비스 기획서 v0.1 9
+
