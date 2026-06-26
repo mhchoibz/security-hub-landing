@@ -610,7 +610,7 @@
       </div>
       <div class="detail-grid">
         <div class="detail-item"><div class="detail-label">출발 IP</div><div class="detail-val" id="detail-ip">203.0.113.42</div></div>
-        <div class="detail-item"><div class="detail-label">탐지 제품</div><div class="detail-val" id="detail-product">Cloudbric WAF+</div></div>
+        <div class="detail-item"><div class="detail-label">탐지 제품</div><div class="detail-val" id="detail-product">WAF+</div></div>
         <div class="detail-item"><div class="detail-label">대상 경로</div><div class="detail-val" id="detail-path">/api/login</div></div>
         <div class="detail-item"><div class="detail-label">발생 시각</div><div class="detail-val" id="detail-time">09:12:04</div></div>
         <div class="detail-item"><div class="detail-label">출발 국가</div><div class="detail-val" id="detail-country">CN</div></div>
@@ -806,7 +806,7 @@ function renderStep() {
      <div class="check-list">
        <div class="check-item ${checks.c1?'selected':''}" id="c1" onclick="toggleCheck('c1')">
          <div class="check-icon">${checks.c1?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
-         <div style="flex:1"><div class="ci-title">Cloudbric WAF+</div><div class="ci-desc">웹 방화벽 · API 보안 · Bot 완화 · DDoS 방어</div></div>
+         <div style="flex:1"><div class="ci-title">WAF+</div><div class="ci-desc">웹 방화벽 · API 보안 · Bot 완화 · DDoS 방어</div></div>
        </div>
        <div class="check-item ${checks.c2?'selected':''}" id="c2" onclick="toggleCheck('c2')">
          <div class="check-icon">${checks.c2?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
@@ -814,14 +814,14 @@ function renderStep() {
        </div>
        <div class="check-item ${checks.c3?'selected':''}" id="c3" onclick="toggleCheck('c3')">
          <div class="check-icon">${checks.c3?'<i class="ti ti-check" style="font-size:12px"></i>':''}</div>
-         <div style="flex:1"><div class="ci-title">Cloudbric Mask</div><div class="ci-desc">AI 기반 영상·이미지 비식별화</div></div>
+         <div style="flex:1"><div class="ci-title">Security Mask</div><div class="ci-desc">AI 기반 영상·이미지 비식별화</div></div>
        </div>
      </div>`,
 
     `<div class="section-label">WAF+ 설정 안내</div>
      <div class="dns-box">
        <div class="dns-label">CNAME 레코드 변경</div>
-       example.com → waf.cloudbric.com
+       example.com → waf.securityhub.io
      </div>
      <p class="hint"><i class="ti ti-clock" style="font-size:13px;vertical-align:-1px"></i> DNS 반영까지 약 10분 소요됩니다</p>
      <div style="margin-top:14px;padding:10px 14px;background:var(--success-light);border-radius:6px;font-size:12px;color:var(--success);font-weight:500">
@@ -852,7 +852,7 @@ function showEventDetail(type, ip, path, time, country, count, product) {
   document.getElementById('detail-type-pill').style.cssText = (typePillStyles[type] || '') + ';font-size:12px;padding:4px 12px';
   document.getElementById('detail-type-label').textContent = typeLabels[type] || type + ' 탐지';
   document.getElementById('detail-ip').textContent = ip;
-  document.getElementById('detail-product').textContent = 'Cloudbric ' + product;
+  document.getElementById('detail-product').textContent = '' + product;
   document.getElementById('detail-path').textContent = path;
   document.getElementById('detail-time').textContent = time;
   document.getElementById('detail-country').textContent = country;
