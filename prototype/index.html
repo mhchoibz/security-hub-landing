@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.amplitude.com/libs/analytics-browser-2.3.5-min.js.gz"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -714,6 +715,7 @@ function show(id) {
   document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
   if (id === 'events') showEventList();
   if (id === 'dashboard') animateDashboard();
+  amplitude.track('tab_viewed', { tab: id });
 }
 
 function countUp(el, target, duration, formatter) {
@@ -781,7 +783,16 @@ function toggleApply(id) {
 }
 
 function nextStep() {
-  if (currentStep < 4) { currentStep++; renderStep(); }
+  if (currentStep < 4) {
+    currentStep++;
+    renderStep();
+    if (currentStep === 4) {
+      var selected = Object.keys(checks).filter(function(k) { return checks[k]; });
+      amplitude.track('onboarding_completed', { products: selected });
+    } else {
+      amplitude.track('onboarding_step_viewed', { step: currentStep });
+    }
+  }
 }
 function prevStep() {
   if (currentStep > 1) { currentStep--; renderStep(); }
@@ -862,6 +873,7 @@ function showEventDetail(type, ip, path, time, country, count, product) {
   applies = { ap1: true, ap2: true };
   document.getElementById('ap1').classList.add('selected');
   document.getElementById('ap2').classList.add('selected');
+  amplitude.track('event_detail_viewed', { type: type, ip: ip });
 }
 
 function showEventList() {
@@ -871,6 +883,9 @@ function showEventList() {
 
 function blockIP() {
   document.getElementById('block-result').style.display = 'block';
+  var ip = document.getElementById('detail-ip').textContent;
+  var duration = document.querySelector('.form-select').value;
+  amplitude.track('ip_blocked', { ip: ip, duration: duration });
 }
 
 function connectSlack() {
@@ -879,7 +894,16 @@ function connectSlack() {
   badge.textContent = '연결됨';
   badge.className = 'badge badge-ok';
   btn.style.display = 'none';
+  amplitude.track('slack_connected');
 }
+
+// ── Amplitude ──
+window.addEventListener('load', function() {
+  amplitude.init('4ab5d17e8d13bd706f99b634c8ae86e3', { autocapture: false });
+  amplitude.track('page_viewed', { page: 'prototype' });
+  amplitude.track('tab_viewed', { tab: 'onboarding' });
+  amplitude.track('onboarding_step_viewed', { step: 1 });
+});
 </script>
 </body>
 </html>
